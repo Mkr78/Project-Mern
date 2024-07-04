@@ -1,14 +1,30 @@
+// article.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import {
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Typography,
+  TextField,
+  Container,
+  Grid,
+  CardMedia,
+  Pagination,
+  Box
+} from '@mui/material';
 
 const Article = () => {
-    const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState([]);
   const [newArticle, setNewArticle] = useState({
     name: '',
     description: '',
     price: 0,
     stock: 0,
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const articlesPerPage = 6;
 
   useEffect(() => {
     fetchArticles();
@@ -56,54 +72,102 @@ const Article = () => {
     setNewArticle({ ...newArticle, [name]: value });
   };
 
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const indexOfLastArticle = currentPage * articlesPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
 
   return (
-    <div>
-        <h1>Product Management</h1>
-      <input
-        type="text"
+    <Container>
+      <h1>Product Management</h1>
+      <TextField
+        label="Name"
         name="name"
-        placeholder="Name"
         value={newArticle.name}
         onChange={handleInputChange}
+        variant="outlined"
+        margin="normal"
+        fullWidth
       />
-      <input
-        type="text"
+      <TextField
+        label="Description"
         name="description"
-        placeholder="Description"
         value={newArticle.description}
         onChange={handleInputChange}
+        variant="outlined"
+        margin="normal"
+        fullWidth
       />
-      <input
-        type="number"
+      <TextField
+        label="Price"
         name="price"
-        placeholder="Price"
         value={newArticle.price}
         onChange={handleInputChange}
+        variant="outlined"
+        margin="normal"
+        fullWidth
       />
-      <input
-        type="number"
+      <TextField
+        label="Stock"
         name="stock"
-        placeholder="Stock"
         value={newArticle.stock}
         onChange={handleInputChange}
+        variant="outlined"
+        margin="normal"
+        fullWidth
       />
-      <button onClick={addArticle}>Add Article</button>
-      <ul>
-        {articles.map(article => (
-          <li key={article._id}>
-            <h2>{article.name}</h2>
-            <p>{article.description}</p>
-            <p>Price: {article.price}</p>
-            <p>Stock: {article.stock}</p>
-            <button onClick={() => deleteArticle(article._id)}>Delete</button>
-            <button onClick={() => updateArticle(article._id, { ...article, stock: article.stock - 1 })}>Buy</button>
-          </li>
+      <Button variant="contained" color="primary" onClick={addArticle} style={{ marginTop: '1rem' }}>
+        Add Article
+      </Button>
+      <Grid container spacing={2} style={{ marginTop: '2rem' }}>
+        {currentArticles.map(article => (
+          <Grid item xs={12} sm={6} md={4} key={article._id}>
+            <Card>
+              <CardMedia
+                component="img"
+                alt="Article image"
+                height="140"
+                image={`https://picsum.photos/200/300?random=${article._id}`}
+              />
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  {article.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {article.description}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Price: {article.price}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Stock: {article.stock}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button size="small" color="primary" onClick={() => updateArticle(article._id, { ...article, stock: article.stock - 1 })}>
+                  Buy
+                </Button>
+                <Button size="small" color="secondary" onClick={() => deleteArticle(article._id)}>
+                  Delete
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
         ))}
-      </ul>
-    </div>
-  )
-
-}
+      </Grid>
+      <Box display="flex" justifyContent="center" marginTop="2rem">
+        <Pagination
+          count={Math.ceil(articles.length / articlesPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
+    </Container>
+  );
+};
 
 export default Article;

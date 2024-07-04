@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const app = express();
 
-const CONNECTION_URL = process.env.DBURL || "mongodb+srv://admin:0139220337m@cluster0.ljpns1p.mongodb.net/nodeProject?retryWrites=true&w=majority&appName=Cluster0";
+const CONNECTION_URL = process.env.DBURL;
 const PORT = 3001;
 
 mongoose.connect(CONNECTION_URL, {
