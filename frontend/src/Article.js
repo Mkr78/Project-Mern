@@ -63,9 +63,9 @@ const Article = ({ onLogout }) => {
   return (
     <Container>
       <Button variant="contained" color="secondary" onClick={onLogout} style={{ marginTop: '1rem' }}>
-        Logout
+        Déconnexion
       </Button>
-      <h1>Article</h1>
+      <h1>Articles</h1>
       <TextField
         label="Search"
         value={searchTerm}

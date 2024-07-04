@@ -43,10 +43,10 @@ const Admin = ({ onLogout }) => {
     return (
         <Container>
             <Button variant="contained" color="secondary" onClick={handleLogout} style={{ marginTop: '1rem' }}>
-                Logout
+                Déconnexion
             </Button>
             <Typography variant="h4" gutterBottom>
-                Add New Article
+                Ajouter un article
             </Typography>
             <TextField
                 label="Name"
@@ -88,7 +88,7 @@ const Admin = ({ onLogout }) => {
             />
             {message && <Typography>{message}</Typography>}
             <Button variant="contained" color="primary" onClick={handleAddArticle} style={{ marginTop: '1rem' }}>
-                Add Article
+                Ajouter
             </Button>
         </Container>
     );

@@ -23,6 +23,10 @@ const Login = ({ onLogin }) => {
         }
     };
 
+    const goToRegister = () => {
+        navigate('/register');
+    };
+
     return (
         <Container>
             <Typography variant="h4" component="h1" gutterBottom>Login</Typography>
@@ -45,7 +49,10 @@ const Login = ({ onLogin }) => {
             />
             {error && <Typography color="error">{error}</Typography>}
             <Button variant="contained" color="primary" onClick={handleLogin} style={{ marginTop: '1rem' }}>
-                Login
+                Se connecter
+            </Button>
+            <Button variant="outlined" color="secondary" onClick={goToRegister} style={{ marginTop: '1rem' }}>
+                S'incrire
             </Button>
         </Container>
     );

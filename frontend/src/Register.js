@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { TextField, Button, Container, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleRegister = async () => {
         try {
@@ -15,6 +17,10 @@ const Register = () => {
         } catch (err) {
             setMessage('Error registering user');
         }
+    };
+
+    const navigateToLogin = () => {
+        navigate('/login');
     };
 
     return (
@@ -37,17 +43,20 @@ const Register = () => {
                 margin="normal"
                 fullWidth
             />
-            <TextField
+            {/* <TextField
                 label="Role"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 variant="outlined"
                 margin="normal"
                 fullWidth
-            />
+            /> */}
             {message && <Typography>{message}</Typography>}
             <Button variant="contained" color="primary" onClick={handleRegister} style={{ marginTop: '1rem' }}>
                 S'inscrire
+            </Button>
+            <Button variant="contained" color="secondary" onClick={navigateToLogin} style={{ marginTop: '1rem' }}>
+                Se connecter
             </Button>
         </Container>
     );
