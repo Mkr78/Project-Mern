@@ -12,10 +12,14 @@ const Login = ({ onLogin }) => {
     const handleLogin = async () => {
         try {
             const res = await axios.post('http://localhost:3001/login', { username, password });
-            onLogin(res.data.token, res.data.role);
-            navigate('/articles');
+            const { token, role } = res.data;
+            onLogin(token, role);
+            console.log(role);
+            console.log(res.data); 
+            
+            navigate(role === 'ROLE_ADMIN' ? '/admin' : '/articles'); 
         } catch (err) {
-            setError('Invalid username or password');
+            setError('Invalid credentials'); 
         }
     };
 

@@ -5,10 +5,9 @@ const { connect, Schema, model } = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config()
 
 const app = express();
-
-require('dotenv').config()
 
 const CONNECTION_URL = process.env.DBURL;
 const PORT = process.env.PORT || 3001;
@@ -85,18 +84,25 @@ app.get('/articles', authenticateToken, async (req, res) => {
     }
 });
 
-app.post('/articles', authenticateToken, authorizeAdmin, async (req, res) => {
+app.post('/login', async (req, res) => {
     try {
-        console.log('POST /articles', req.body);  // Log before saving
-        const newArticle = new Article(req.body);
-        await newArticle.save();
-        console.log('Article saved:', newArticle);  // Log after saving
-        res.json(newArticle);
+        const { username, password } = req.body;
+        console.log('POST /login', username);  // Log before login
+
+        const user = await User.findOne({ username });
+        if (!user || !bcrypt.compare(password, user.password)) {
+            console.log('Invalid credentials');
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        const token = jwt.sign({ userId: user._id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+        res.json({ token, role: user.role }); // Assurez-vous de renvoyer le rôle ici
     } catch (err) {
-        console.error('Error adding article:', err);
+        console.error('Error logging in:', err);
         res.status(500).send('Server error');
     }
 });
+
 
 app.put('/articles/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
@@ -124,12 +130,11 @@ app.delete('/articles/:id', authenticateToken, authorizeAdmin, async (req, res) 
 app.post('/register', async (req, res) => {
     try {
         const { username, password, role } = req.body;
-        console.log('POST /register', username);  // Log before registering
+        console.log('POST /register', username);
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({ username, password: hashedPassword, role });
-        console.log('Saving user:', newUser);  // Log before saving
+        console.log('Saving user:', newUser); 
         await newUser.save();
-        console.log('User registered:', newUser);  // Log after saving
         res.json({ message: 'User registered successfully' });
     } catch (err) {
         console.error('Error registering user:', err);
@@ -142,17 +147,20 @@ app.post('/login', async (req, res) => {
         const { username, password } = req.body;
         console.log('POST /login', username);  // Log before login
         const user = await User.findOne({ username });
-        if (!user || !await bcrypt.compare(password, user.password)) {
+        console.log(user);
+        if (!user || !bcrypt.compare(password, user.password)) {
             console.log('Invalid credentials');
             return res.status(401).json({ message: 'Invalid credentials' });
         }
         const token = jwt.sign({ userId: user._id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
-        res.json({ token });
+        res.json({ token, role: user.role });
+        console.log(res.json)
     } catch (err) {
         console.error('Error logging in:', err);
         res.status(500).send('Server error');
     }
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
