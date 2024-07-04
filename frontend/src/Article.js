@@ -23,6 +23,7 @@ const Article = () => {
     price: 0,
     stock: 0,
   });
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const articlesPerPage = 6;
 
@@ -72,13 +73,23 @@ const Article = () => {
     setNewArticle({ ...newArticle, [name]: value });
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
   const indexOfLastArticle = currentPage * articlesPerPage;
   const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
-  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
+
+  const filteredArticles = articles.filter(article =>
+    article.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    article.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const currentArticles = filteredArticles.slice(indexOfFirstArticle, indexOfLastArticle);
 
   return (
     <Container>
@@ -120,8 +131,17 @@ const Article = () => {
         fullWidth
       />
       <Button variant="contained" color="primary" onClick={addArticle} style={{ marginTop: '1rem' }}>
-        Add Article
+        Ajouter
       </Button>
+      <TextField
+        label="Search"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        variant="outlined"
+        margin="normal"
+        fullWidth
+        style={{ marginTop: '2rem' }}
+      />
       <Grid container spacing={2} style={{ marginTop: '2rem' }}>
         {currentArticles.map(article => (
           <Grid item xs={12} sm={6} md={4} key={article._id}>
@@ -160,7 +180,7 @@ const Article = () => {
       </Grid>
       <Box display="flex" justifyContent="center" marginTop="2rem">
         <Pagination
-          count={Math.ceil(articles.length / articlesPerPage)}
+          count={Math.ceil(filteredArticles.length / articlesPerPage)}
           page={currentPage}
           onChange={handlePageChange}
           color="primary"
