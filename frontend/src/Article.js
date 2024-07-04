@@ -1,4 +1,3 @@
-// article.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
@@ -14,18 +13,14 @@ import {
   Pagination,
   Box
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-const Article = () => {
+const Article = ({ onLogout }) => {
   const [articles, setArticles] = useState([]);
-  const [newArticle, setNewArticle] = useState({
-    name: '',
-    description: '',
-    price: 0,
-    stock: 0,
-  });
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const articlesPerPage = 6;
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchArticles();
@@ -33,44 +28,18 @@ const Article = () => {
 
   const fetchArticles = async () => {
     try {
-      const res = await axios.get('http://localhost:3001/articles');
+      const token = localStorage.getItem('token');
+      const res = await axios.get('http://localhost:3001/articles', {
+        headers: { Authorization: token }
+      });
       setArticles(res.data);
     } catch (err) {
       console.error('Error fetching articles:', err);
+      if (err.response.status === 401 || err.response.status === 403) {
+        onLogout();
+        navigate('/login');
+      }
     }
-  };
-
-  const addArticle = async () => {
-    try {
-      const res = await axios.post('http://localhost:3001/articles', newArticle);
-      setArticles([...articles, res.data]);
-      setNewArticle({ name: '', description: '', price: 0, stock: 0 });
-    } catch (err) {
-      console.error('Error adding article:', err);
-    }
-  };
-
-  const deleteArticle = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3001/articles/${id}`);
-      setArticles(articles.filter(article => article._id !== id));
-    } catch (err) {
-      console.error('Error deleting article:', err);
-    }
-  };
-
-  const updateArticle = async (id, updatedFields) => {
-    try {
-      const res = await axios.put(`http://localhost:3001/articles/${id}`, updatedFields);
-      setArticles(articles.map(article => (article._id === id ? res.data : article)));
-    } catch (err) {
-      console.error('Error updating article:', err);
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewArticle({ ...newArticle, [name]: value });
   };
 
   const handleSearchChange = (e) => {
@@ -93,46 +62,10 @@ const Article = () => {
 
   return (
     <Container>
-      <h1>Product Management</h1>
-      <TextField
-        label="Name"
-        name="name"
-        value={newArticle.name}
-        onChange={handleInputChange}
-        variant="outlined"
-        margin="normal"
-        fullWidth
-      />
-      <TextField
-        label="Description"
-        name="description"
-        value={newArticle.description}
-        onChange={handleInputChange}
-        variant="outlined"
-        margin="normal"
-        fullWidth
-      />
-      <TextField
-        label="Price"
-        name="price"
-        value={newArticle.price}
-        onChange={handleInputChange}
-        variant="outlined"
-        margin="normal"
-        fullWidth
-      />
-      <TextField
-        label="Stock"
-        name="stock"
-        value={newArticle.stock}
-        onChange={handleInputChange}
-        variant="outlined"
-        margin="normal"
-        fullWidth
-      />
-      <Button variant="contained" color="primary" onClick={addArticle} style={{ marginTop: '1rem' }}>
-        Ajouter
+      <Button variant="contained" color="secondary" onClick={onLogout} style={{ marginTop: '1rem' }}>
+        Logout
       </Button>
+      <h1>Product Management</h1>
       <TextField
         label="Search"
         value={searchTerm}
@@ -167,11 +100,8 @@ const Article = () => {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small" color="primary" onClick={() => updateArticle(article._id, { ...article, stock: article.stock - 1 })}>
+                <Button size="small" color="primary">
                   Buy
-                </Button>
-                <Button size="small" color="secondary" onClick={() => deleteArticle(article._id)}>
-                  Delete
                 </Button>
               </CardActions>
             </Card>
