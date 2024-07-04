@@ -52,7 +52,7 @@ const Login = ({ onLogin }) => {
                 Se connecter
             </Button>
             <Button variant="outlined" color="secondary" onClick={goToRegister} style={{ marginTop: '1rem' }}>
-                S'incrire
+                Inscription
             </Button>
         </Container>
     );

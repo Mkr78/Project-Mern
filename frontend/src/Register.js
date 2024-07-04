@@ -56,7 +56,7 @@ const Register = () => {
                 S'inscrire
             </Button>
             <Button variant="contained" color="secondary" onClick={navigateToLogin} style={{ marginTop: '1rem' }}>
-                Se connecter
+                Connexion
             </Button>
         </Container>
     );
