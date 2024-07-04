@@ -30,10 +30,7 @@ const App = () => {
                 <Route path="/login" element={<Login onLogin={handleLogin} />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/articles" element={token ? <Article onLogout={handleLogout} /> : <Navigate to="/login" />} />
-                {/* <Route path="/articles" element={<Article />} /> */}
                 <Route path="/admin" element={token && role === 'ROLE_ADMIN' ? <Admin onLogout={handleLogout} /> : <Navigate to="/login" />} />
-                {/* <Route path="/admin" element={<Admin/>} /> */}
-
             </Routes>
         </Router>
     );
