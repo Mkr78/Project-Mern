@@ -120,8 +120,13 @@ app.put('/articles/:id/buy', authenticateToken, async (req, res) => {
         const article = await Article.findById(req.params.id);
         if (article.stock > 0) {
             article.stock -= 1;
-            await article.save();
-            res.json(article);
+            if (article.stock === 0) {
+                await article.deleteOne();
+                res.json({ message: 'Article out of stock and deleted' });
+            } else {
+                await article.save();
+                res.json(article);
+            }
         } else {
             res.status(400).json({ message: 'Out of stock' });
         }
