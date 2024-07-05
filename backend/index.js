@@ -115,6 +115,22 @@ app.put('/articles/:id', authenticateToken, authorizeAdmin, async (req, res) => 
     }
 });
 
+app.put('/articles/:id/buy', authenticateToken, async (req, res) => {
+    try {
+        const article = await Article.findById(req.params.id);
+        if (article.stock > 0) {
+            article.stock -= 1;
+            await article.save();
+            res.json(article);
+        } else {
+            res.status(400).json({ message: 'Out of stock' });
+        }
+    } catch (err) {
+        console.error('Error buying article:', err);
+        res.status(500).send('Server error');
+    }
+});
+
 app.delete('/articles/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         console.log('DELETE /articles/:id', req.params.id);

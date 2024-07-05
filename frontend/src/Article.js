@@ -50,6 +50,20 @@ const Article = ({ onLogout }) => {
     setCurrentPage(value);
   };
 
+  const handleBuyArticle = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.put(`http://localhost:3001/articles/${id}/buy`, {}, {
+        headers: { Authorization: token }
+      });
+      setArticles(articles.map(article => 
+        article._id === id ? res.data : article
+      ));
+    } catch (err) {
+      console.error('Error buying article:', err);
+    }
+  };
+
   const indexOfLastArticle = currentPage * articlesPerPage;
   const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
 
@@ -100,8 +114,8 @@ const Article = ({ onLogout }) => {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small" color="primary">
-                  Buy
+                <Button size="small" color="primary" onClick={() => handleBuyArticle(article._id)} disabled={article.stock <= 0}>
+                  Acheter
                 </Button>
               </CardActions>
             </Card>
