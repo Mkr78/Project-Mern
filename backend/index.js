@@ -84,6 +84,19 @@ app.get('/articles', authenticateToken, async (req, res) => {
     }
 });
 
+app.post('/articles', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const { name, description, price, stock } = req.body;
+        console.log('POST /articles', req.body);
+        const newArticle = new Article({ name, description, price, stock });
+        await newArticle.save();
+        res.json(newArticle);
+    } catch (err) {
+        console.error('Error adding article:', err);
+        res.status(500).send('Server error');
+    }
+});
+
 app.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
